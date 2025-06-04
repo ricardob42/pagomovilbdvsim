@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago Móvil - Banco de Venezuela</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: #e20020;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            height: 40px;
+        }
+
+        .logo img {
+            height: 100%;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+            position: relative;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        nav ul li a:hover {
+            opacity: 0.8;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 4px;
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 13px;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        .main-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .page-title {
+            color: #e20020;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 700;
+            align-self: flex-start;
+        }
+
+        .payment-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #e20020;
+            outline: none;
+        }
+
+        .input-icon {
+            position: relative;
+        }
+
+        .input-icon i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+
+        .input-icon input {
+            padding-left: 35px;
+        }
+
+        .btn {
+            background-color: #e20020;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #c0001a;
+        }
+
+        .error-message {
+            color: #e20020;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        /* Success Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            text-align: center;
+            animation: modalOpen 0.4s;
+        }
+
+        @keyframes modalOpen {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            color: white;
+            font-size: 40px;
+        }
+
+        .success-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #4CAF50;
+        }
+
+        .payment-details {
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .payment-details p {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .payment-details strong {
+            color: #333;
+        }
+
+        .btn-close {
+            background-color: #4CAF50;
+            margin-top: 10px;
+        }
+
+        .btn-close:hover {
+            background-color: #3e8e41;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+
+        .footer-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .security-logos {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .security-logos img {
+            height: 40px;
+            margin: 0 10px;
+        }
+
+        .copyright {
+            font-size: 12px;
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            margin: 20px auto;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #e20020;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav ul {
+                display: none;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .payment-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAgODAiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yMjQgMzJoLTY0djE2aDY0em0wLTMySDEyOHY0OGg5NnYtNDh6Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTE2MCAwaC0zMnY4MGgzMnYtNDhoMzJ2MzJoMzJWMEgxNjB6Ii8+PC9zdmc+" alt="Banco de Venezuela">
+            </div>
+            <nav>
+                <div class="hamburger">☰</div>
+                <ul>
+                    <li><a href="#">Inicio</a></li>
+                    <li class="dropdown">
+                        <a href="#">Productos</a>
+                        <div class="dropdown-content">
+                            <a href="#">Cuentas</a>
+                            <a href="#">Tarjetas</a>
+                            <a href="#">Préstamos</a>
+                        </div>
+                    </li>
+                    <li><a href="#">Consulta de Saldo</a></li>
+                    <li><a href="#">Transferencias</a></li>
+                    <li><a href="#">Pago Móvil</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <h1 class="page-title">Pago Móvil</h1>
+        
+        <div class="payment-card">
+            <form id="paymentForm">
+                <div class="form-group">
+                    <label for="phone">Teléfono</label>
+                    <div class="input-icon">
+                        <i>📱</i>
+                        <input type="tel" class="form-control" id="phone" placeholder="Ej: 04141234567" maxlength="11">
+                    </div>
+                    <div class="error-message" id="phoneError">Debe ingresar un número de teléfono válido (11 dígitos)</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="idType">Cédula</label>
+                    <div style="display: flex;">
+                        <select class="form-control" id="idType" style="width: 20%; margin-right: 10px;">
+                            <option value="V">V</option>
+                            <option value="E">E</option>
+                            <option value="J">J</option>
+                        </select>
+                        <input type="text" class="form-control" id="idNumber" placeholder="Número de cédula" style="width: 80%;">
+                    </div>
+                    <div class="error-message" id="idError">Debe ingresar un número de cédula válido</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="bank">Banco Destino</label>
+                    <select class="form-control" id="bank">
+                        <option value="">Seleccione un banco</option>
+                        <option value="0102">Banco de Venezuela</option>
+                        <option value="0104">Venezuela</option>
+                        <option value="0105">Mercantil</option>
+                        <option value="0108">Provincial</option>
+                        <option value="0114">Bancaribe</option>
+                        <option value="0115">BFC</option>
+                        <option value="0116">Banco del Tesoro</option>
+                        <option value="0128">Banco Plaza</option>
+                        <option value="0134">Banesco</option>
+                        <option value="0137">Sofitasa</option>
+                        <option value="0138">Banco Exterior</option>
+                        <option value="0146">Banco de la Gente Emprendedora</option>
+                        <option value="0151">Bancamiga</option>
+                        <option value="0156">100% Banco</option>
+                        <option value="0157">DelSur</option>
+                        <option value="0163">Banco del Caribe</option>
+                        <option value="0166">Banco Agrícola de Venezuela</option>
+                        <option value="0168">Bancrecer</option>
+                        <option value="0169">Mi Banco</option>
+                        <option value="0171">Banco Activo</option>
+                        <option value="0172">Bancamiga</option>
+                        <option value="0174">Banplus</option>
+                        <option value="0175">Bicentenario</option>
+                        <option value="0177">Banfanb</option>
+                    </select>
+                    <div class="error-message" id="bankError">Debe seleccionar un banco destino</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="amount">Monto</label>
+                    <input type="text" class="form-control" id="amount" placeholder="Ej: 1.000,00">
+                    <div class="error-message" id="amountError">Debe ingresar un monto válido</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descripción</label>
+                    <textarea class="form-control" id="description" rows="3" maxlength="30" placeholder="Máximo 30 caracteres"></textarea>
+                    <div class="error-message" id="descError">La descripción no puede exceder 30 caracteres</div>
+                </div>
+
+                <div class="spinner" id="loadingSpinner"></div>
+
+                <button type="submit" class="btn" id="submitBtn">Confirmar Pago</button>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="security-logos">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgNDAiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yMCAxMGg2MHYyMEgyMHoiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjgiIGZpbGw9IiMzMzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPlNFR1VSTzwvdGV4dD48L3N2Zz4=" alt="Seguro">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgNDAiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yMCAxMGg2MHYyMEgyMHoiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjgiIGZpbGw9IiMzMzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPkNMQVZFIENPTkZJQUw8L3RleHQ+PC9zdmc+" alt="Clave Confidencial">
+            </div>
+            <div class="copyright">
+                © 2023 Banco de Venezuela. Todos los derechos reservados.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="checkmark">✓</div>
+            <h2 class="success-title">¡Pago realizado con éxito!</h2>
+            
+            <div class="payment-details">
+                <p><strong>Teléfono:</strong> <span id="successPhone"></span></p>
+                <p><strong>Beneficiario:</strong> <span id="successName"></span></p>
+                <p><strong>Banco Destino:</strong> <span id="successBank"></span></p>
+                <p><strong>Monto:</strong> <span id="successAmount"></span></p>
+                <p><strong>Fecha:</strong> <span id="successDate"></span></p>
+                <p><strong>Referencia:</strong> <span id="successRef"></span></p>
+            </div>
+
+            <button class="btn btn-close" id="closeModal">Volver al inicio</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('paymentForm');
+            const phoneInput = document.getElementById('phone');
+            const idNumberInput = document.getElementById('idNumber');
+            const bankSelect = document.getElementById('bank');
+            const amountInput = document.getElementById('amount');
+            const descriptionInput = document.getElementById('description');
+            const submitBtn = document.getElementById('submitBtn');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const successModal = document.getElementById('successModal');
+            
+            // Format amount input
+            amountInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/[^\d]/g, '');
+                if (value.length > 2) {
+                    value = value.slice(0, -2) + '.' + value.slice(-2);
+                }
+                if (value.length > 6) {
+                    value = value.slice(0, -6) + ',' + value.slice(-6);
+                }
+                e.target.value = value;
+            });
+
+            // Form validation
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                let isValid = true;
+                
+                // Validate phone (11 digits)
+                if (!/^\d{11}$/.test(phoneInput.value)) {
+                    document.getElementById('phoneError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('phoneError').style.display = 'none';
+                }
+                
+                // Validate ID number
+                if (idNumberInput.value.trim() === '') {
+                    document.getElementById('idError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('idError').style.display = 'none';
+                }
+                
+                // Validate bank
+                if (bankSelect.value === '') {
+                    document.getElementById('bankError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('bankError').style.display = 'none';
+                }
+                
+                // Validate amount
+                if (!/^[\d.,]+$/.test(amountInput.value) || amountInput.value.trim() === '') {
+                    document.getElementById('amountError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('amountError').style.display = 'none';
+                }
+                
+                // Validate description
+                if (descriptionInput.value.length > 30) {
+                    document.getElementById('descError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('descError').style.display = 'none';
+                }
+                
+                if (isValid) {
+                    submitBtn.disabled = true;
+                    loadingSpinner.style.display = 'block';
+                    
+                    // Simulate API call
+                    setTimeout(function() {
+                        loadingSpinner.style.display = 'none';
+                        
+                        // Set success modal data
+                        document.getElementById('successPhone').textContent = phoneInput.value;
+                        document.getElementById('successName').textContent = 'Usuario Ejemplo';
+                        document.getElementById('successBank').textContent = bankSelect.options[bankSelect.selectedIndex].text;
+                        document.getElementById('successAmount').textContent = amountInput.value + ' Bs.';
+                        
+                        const now = new Date();
+                        document.getElementById('successDate').textContent = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+                        
+                        document.getElementById('successRef').textContent = 'PM' + Math.floor(Math.random() * 1000000000);
+                        
+                        // Show modal
+                        successModal.style.display = 'flex';
+                        
+                        submitBtn.disabled = false;
+                    }, 2000);
+                }
+            });
+            
+            // Close modal
+            document.getElementById('closeModal').addEventListener('click', function() {
+                successModal.style.display = 'none';
+                form.reset();
+            });
+            
+            // Mobile menu toggle
+            document.querySelector('.hamburger').addEventListener('click', function() {
+                const navUl = document.querySelector('nav ul');
+                if (navUl.style.display === 'block') {
+                    navUl.style.display = 'none';
+                } else {
+                    navUl.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
