@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Simulador de Pago Móvil del Banco de Venezuela. Realiza pagos móviles de forma rápida y segura.">
+    <meta name="theme-color" content="#e20020">
     <title>Pago Móvil - Banco de Venezuela</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -58,7 +62,7 @@
             text-decoration: none;
             font-weight: 500;
             font-size: 14px;
-            transition: all 0.3s;
+            transition: opacity 0.3s;
         }
 
         nav ul li a:hover {
@@ -320,6 +324,12 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Reduce motion for accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            .modal-content { animation: none !important; }
+            .spinner { animation: none !important; }
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             nav ul {
@@ -340,11 +350,11 @@
     <header>
         <div class="header-container">
             <div class="logo">
-                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAgODAiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yMjQgMzJoLTY0djE2aDY0em0wLTMySDEyOHY0OGg5NnYtNDh6Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTE2MCAwaC0zMnY4MGgzMnYtNDhoMzJ2MzJoMzJWMEgxNjB6Ii8+PC9zdmc+" alt="Banco de Venezuela">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAgODAiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yMjQgMzJoLTY0djE2aDY0em0wLTMySDEyOHY0OGg5NnYtNDh6Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTE2MCAwaC0zMnY4MGgzMnYtNDhoMzJ2MzJoMzJWMEgxNjB6Ii8+PC9zdmc+" alt="Banco de Venezuela" decoding="async">
             </div>
             <nav>
-                <div class="hamburger">☰</div>
-                <ul>
+                <button class="hamburger" aria-expanded="false" aria-controls="primary-nav" aria-label="Abrir menú">☰</button>
+                <ul id="primary-nav">
                     <li><a href="#">Inicio</a></li>
                     <li class="dropdown">
                         <a href="#">Productos</a>
@@ -366,14 +376,14 @@
         <h1 class="page-title">Pago Móvil</h1>
         
         <div class="payment-card">
-            <form id="paymentForm">
+            <form id="paymentForm" novalidate>
                 <div class="form-group">
                     <label for="phone">Teléfono</label>
                     <div class="input-icon">
                         <i>📱</i>
-                        <input type="tel" class="form-control" id="phone" placeholder="Ej: 04141234567" maxlength="11">
+                        <input type="tel" class="form-control" id="phone" placeholder="Ej: 04141234567" maxlength="11" inputmode="numeric" autocomplete="tel">
                     </div>
-                    <div class="error-message" id="phoneError">Debe ingresar un número de teléfono válido (11 dígitos)</div>
+                    <div class="error-message" id="phoneError" aria-live="polite">Debe ingresar un número de teléfono válido (11 dígitos)</div>
                 </div>
 
                 <div class="form-group">
@@ -384,9 +394,9 @@
                             <option value="E">E</option>
                             <option value="J">J</option>
                         </select>
-                        <input type="text" class="form-control" id="idNumber" placeholder="Número de cédula" style="width: 80%;">
+                        <input type="text" class="form-control" id="idNumber" placeholder="Número de cédula" style="width: 80%;" inputmode="numeric" autocomplete="off">
                     </div>
-                    <div class="error-message" id="idError">Debe ingresar un número de cédula válido</div>
+                    <div class="error-message" id="idError" aria-live="polite">Debe ingresar un número de cédula válido</div>
                 </div>
 
                 <div class="form-group">
@@ -394,7 +404,7 @@
                     <select class="form-control" id="bank">
                         <option value="">Seleccione un banco</option>
                         <option value="0102">Banco de Venezuela</option>
-                        <option value="0104">Venezuela</option>
+                        <option value="0104">Venezolano de Crédito</option>
                         <option value="0105">Mercantil</option>
                         <option value="0108">Provincial</option>
                         <option value="0114">Bancaribe</option>
@@ -418,22 +428,22 @@
                         <option value="0175">Bicentenario</option>
                         <option value="0177">Banfanb</option>
                     </select>
-                    <div class="error-message" id="bankError">Debe seleccionar un banco destino</div>
+                    <div class="error-message" id="bankError" aria-live="polite">Debe seleccionar un banco destino</div>
                 </div>
 
                 <div class="form-group">
                     <label for="amount">Monto</label>
-                    <input type="text" class="form-control" id="amount" placeholder="Ej: 1.000,00">
-                    <div class="error-message" id="amountError">Debe ingresar un monto válido</div>
+                    <input type="text" class="form-control" id="amount" placeholder="Ej: 1.000,00" inputmode="decimal" autocomplete="off">
+                    <div class="error-message" id="amountError" aria-live="polite">Debe ingresar un monto válido</div>
                 </div>
 
                 <div class="form-group">
                     <label for="description">Descripción</label>
                     <textarea class="form-control" id="description" rows="3" maxlength="30" placeholder="Máximo 30 caracteres"></textarea>
-                    <div class="error-message" id="descError">La descripción no puede exceder 30 caracteres</div>
+                    <div class="error-message" id="descError" aria-live="polite">La descripción no puede exceder 30 caracteres</div>
                 </div>
 
-                <div class="spinner" id="loadingSpinner"></div>
+                <div class="spinner" id="loadingSpinner" role="status" aria-live="polite" aria-busy="false"></div>
 
                 <button type="submit" class="btn" id="submitBtn">Confirmar Pago</button>
             </form>
@@ -443,8 +453,8 @@
     <footer>
         <div class="footer-container">
             <div class="security-logos">
-                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgNDAiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yMCAxMGg2MHYyMEgyMHoiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjgiIGZpbGw9IiMzMzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPlNFR1VSTzwvdGV4dD48L3N2Zz4=" alt="Seguro">
-                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgNDAiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yMCAxMGg2MHYyMEgyMHoiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjgiIGZpbGw9IiMzMzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPkNMQVZFIENPTkZJQUw8L3RleHQ+PC9zdmc+" alt="Clave Confidencial">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgNDAiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yMCAxMGg2MHYyMEgyMHoiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjgiIGZpbGw9IiMzMzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPlNFR1VSTzwvdGV4dD48L3N2Zz4=" alt="Seguro" loading="lazy" decoding="async">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgNDAiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0yMCAxMGg2MHYyMEgyMHoiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjgiIGZpbGw9IiMzMzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPkNMQVZFIENPTkZJQUw8L3RleHQ+PC9zdmc+" alt="Clave Confidencial" loading="lazy" decoding="async">
             </div>
             <div class="copyright">
                 © 2023 Banco de Venezuela. Todos los derechos reservados.
@@ -453,10 +463,10 @@
     </footer>
 
     <!-- Success Modal -->
-    <div class="modal" id="successModal">
+    <div class="modal" id="successModal" role="dialog" aria-modal="true" aria-labelledby="successTitle" aria-hidden="true">
         <div class="modal-content">
             <div class="checkmark">✓</div>
-            <h2 class="success-title">¡Pago realizado con éxito!</h2>
+            <h2 class="success-title" id="successTitle">¡Pago realizado con éxito!</h2>
             
             <div class="payment-details">
                 <p><strong>Teléfono:</strong> <span id="successPhone"></span></p>
@@ -482,17 +492,49 @@
             const submitBtn = document.getElementById('submitBtn');
             const loadingSpinner = document.getElementById('loadingSpinner');
             const successModal = document.getElementById('successModal');
+            const closeModalBtn = document.getElementById('closeModal');
+            const hamburgerBtn = document.querySelector('.hamburger');
+            const navUl = document.getElementById('primary-nav');
+
+            function openSuccessModal() {
+                successModal.style.display = 'flex';
+                successModal.setAttribute('aria-hidden', 'false');
+                closeModalBtn.focus();
+            }
+
+            function closeSuccessModal() {
+                successModal.style.display = 'none';
+                successModal.setAttribute('aria-hidden', 'true');
+                form.reset();
+                loadingSpinner.style.display = 'none';
+                loadingSpinner.setAttribute('aria-busy', 'false');
+                document.querySelectorAll('.error-message').forEach(function(el){ el.style.display = 'none'; });
+                submitBtn.focus();
+            }
             
-            // Format amount input
+            // Sanitize numeric inputs
+            phoneInput.addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11);
+            });
+            idNumberInput.addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+
+            // Format amount input (1.000,00)
             amountInput.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/[^\d]/g, '');
-                if (value.length > 2) {
-                    value = value.slice(0, -2) + '.' + value.slice(-2);
+                const digitsOnly = e.target.value.replace(/\D/g, '');
+                if (!digitsOnly) {
+                    e.target.value = '';
+                    return;
                 }
-                if (value.length > 6) {
-                    value = value.slice(0, -6) + ',' + value.slice(-6);
+                if (digitsOnly.length <= 2) {
+                    e.target.value = digitsOnly;
+                    return;
                 }
-                e.target.value = value;
+                const integerPart = digitsOnly.slice(0, -2);
+                const decimalPart = digitsOnly.slice(-2);
+                const integerWithThousands = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                e.target.value = integerWithThousands + ',' + decimalPart;
             });
 
             // Form validation
@@ -544,10 +586,12 @@
                 if (isValid) {
                     submitBtn.disabled = true;
                     loadingSpinner.style.display = 'block';
+                    loadingSpinner.setAttribute('aria-busy', 'true');
                     
                     // Simulate API call
                     setTimeout(function() {
                         loadingSpinner.style.display = 'none';
+                        loadingSpinner.setAttribute('aria-busy', 'false');
                         
                         // Set success modal data
                         document.getElementById('successPhone').textContent = phoneInput.value;
@@ -558,10 +602,10 @@
                         const now = new Date();
                         document.getElementById('successDate').textContent = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
                         
-                        document.getElementById('successRef').textContent = 'PM' + Math.floor(Math.random() * 1000000000);
+                        document.getElementById('successRef').textContent = 'PM' + String(Math.floor(Math.random() * 1e9)).padStart(9, '0');
                         
                         // Show modal
-                        successModal.style.display = 'flex';
+                        openSuccessModal();
                         
                         submitBtn.disabled = false;
                     }, 2000);
@@ -569,19 +613,18 @@
             });
             
             // Close modal
-            document.getElementById('closeModal').addEventListener('click', function() {
-                successModal.style.display = 'none';
-                form.reset();
+            closeModalBtn.addEventListener('click', closeSuccessModal);
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && successModal.style.display === 'flex') {
+                    closeSuccessModal();
+                }
             });
             
             // Mobile menu toggle
-            document.querySelector('.hamburger').addEventListener('click', function() {
-                const navUl = document.querySelector('nav ul');
-                if (navUl.style.display === 'block') {
-                    navUl.style.display = 'none';
-                } else {
-                    navUl.style.display = 'block';
-                }
+            hamburgerBtn.addEventListener('click', function() {
+                const isOpen = navUl.style.display === 'block';
+                navUl.style.display = isOpen ? 'none' : 'block';
+                hamburgerBtn.setAttribute('aria-expanded', String(!isOpen));
             });
         });
     </script>
